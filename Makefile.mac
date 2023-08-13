@@ -3,34 +3,34 @@ COMMON_CFLAGS=-Wall
 DBGFLAGS=-Os
 PLSCSIMAKEFILE=Makefile.mac
 
-OBJS_i386=binflash.i386.o drive.i386.o necinterface.i386.o necinternal.i386.o plscsi.i386.o
-OBJS_ppc=binflash.ppc.o drive.ppc.o necinterface.ppc.o necinternal.ppc.o plscsi.ppc.o
+OBJS_arm64=binflash.arm64.o drive.arm64.o necinterface.arm64.o necinternal.arm64.o plscsi.arm64.o
+OBJS_x86_64=binflash.x86_64.o drive.x86_64.o necinterface.x86_64.o necinternal.x86_64.o plscsi.x86_64.o
 
-SDK=-isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4
+SDK=-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk -mmacosx-version-min=11
 
 CFLAGS=-framework IOKit -framework CoreFoundation -framework CoreServices
 
 OUTPUT=necflash
-OUTPUT_i386=necflash.i386
-OUTPUT_ppc=necflash.ppc
+OUTPUT_arm64=necflash.arm64
+OUTPUT_x86_64=necflash.x86_64
 
 mac: $(OUTPUT)
 
-$(OUTPUT): $(OUTPUT_i386) $(OUTPUT_ppc)
-	lipo -create -output $(OUTPUT) $(OUTPUT_i386) $(OUTPUT_ppc)
+$(OUTPUT): $(OUTPUT_arm64) $(OUTPUT_x86_64)
+	lipo -create -output $(OUTPUT) $(OUTPUT_arm64) $(OUTPUT_x86_64)
  
-$(OUTPUT_i386): $(OBJS_i386)
-	$(CXX) -arch i386 $(SDK) $(COMMON_CFLAGS) $(CFLAGS) -o $(OUTPUT_i386) $(OBJS_i386)
+$(OUTPUT_arm64): $(OBJS_arm64)
+	$(CXX) -arch arm64 $(SDK) $(COMMON_CFLAGS) $(CFLAGS) -o $(OUTPUT_arm64) $(OBJS_arm64)
 
-$(OUTPUT_ppc): $(OBJS_ppc)
-	$(CXX) -arch ppc $(SDK) $(COMMON_CFLAGS) $(CFLAGS) -o $(OUTPUT_ppc) $(OBJS_ppc)
+$(OUTPUT_x86_64): $(OBJS_x86_64)
+	$(CXX) -arch x86_64 $(SDK) $(COMMON_CFLAGS) $(CFLAGS) -o $(OUTPUT_x86_64) $(OBJS_x86_64)
 
-plscsi.i386.o:
-	cd plscsi;make -f $(PLSCSIMAKEFILE) i386;cd ..
-plscsi.ppc.o:
-	cd plscsi;make -f $(PLSCSIMAKEFILE) ppc;cd ..
-%.i386.o: %.cpp
-	$(CXX) -arch i386 $(SDK) $(COMMON_CFLAGS) $(DBGFLAGS) -c -o $@ -Os -Wall $<
+plscsi.arm64.o:
+	$(MAKE) -C plscsi -f $(PLSCSIMAKEFILE) arm64
+plscsi.x86_64.o:
+	$(MAKE) -C plscsi -f $(PLSCSIMAKEFILE) x86_64
+%.arm64.o: %.cpp
+	$(CXX) -arch arm64 $(SDK) $(COMMON_CFLAGS) $(DBGFLAGS) -c -o $@ -Os -Wall $<
 
-%.ppc.o: %.cpp
-	$(CXX) -arch ppc $(SDK) $(COMMON_CFLAGS) $(DBGFLAGS) -c -o $@ -Os -Wall $<
+%.x86_64.o: %.cpp
+	$(CXX) -arch x86_64 $(SDK) $(COMMON_CFLAGS) $(DBGFLAGS) -c -o $@ -Os -Wall $<

@@ -72,7 +72,7 @@ typedef unsigned int UINT;
 #define MEMSET memset
 
 #define TO_VOID_P(II) ((void *) (II))
-#if defined(__amd64__) || defined(amd64)
+#if defined(__amd64__) || defined(amd64) || defined(__aarch64__)
 #define TO_INT(VO) ((INT)(long) (VO))
 #else
 #define TO_INT(VO) ((INT) (VO))
